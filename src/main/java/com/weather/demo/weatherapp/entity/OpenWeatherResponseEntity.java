@@ -29,5 +29,8 @@ public class OpenWeatherResponseEntity {
     public static class Main {
         @JsonProperty("temp")
         private double temp;
+
+        @JsonProperty("feels_like")
+        private double feels_like;
     }
 }

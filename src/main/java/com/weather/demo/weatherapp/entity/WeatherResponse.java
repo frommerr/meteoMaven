@@ -16,5 +16,6 @@ public class WeatherResponse {
     private String details;
     private String id; // ID de prueba
     private double temp; // Temperatura
+    private double feels_like; // Sensación térmica
 
 }
