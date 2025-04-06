@@ -12,6 +12,8 @@ public class OpenWeatherTransformer {
         return CityWeather.builder()
                 .weather(entity.getWeather()[0].getMain())
                 .details(entity.getWeather()[0].getDescription())
+                .id(entity.getWeather()[0].getId()) // ID de prueba
+                .temp(entity.getMain().getTemp()) // Mapear la variable temp
                 .build();
     }
 
@@ -19,6 +21,8 @@ public class OpenWeatherTransformer {
         return WeatherResponse.builder()
                 .weather(cityWeather.getWeather())
                 .details(cityWeather.getDetails())
+                .id(cityWeather.getId()) // ID de prueba
+                .temp(cityWeather.getTemp()) // Mapear la variable temp
                 .build();
     }
 }

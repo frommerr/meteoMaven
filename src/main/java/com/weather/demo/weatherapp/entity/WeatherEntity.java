@@ -21,4 +21,5 @@ public class WeatherEntity {
     private String description;
     @JsonProperty("icon")
     private String icon;
+
 }

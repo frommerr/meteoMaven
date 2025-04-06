@@ -14,4 +14,7 @@ import lombok.Setter;
 public class WeatherResponse {
     private String weather;
     private String details;
+    private String id; // ID de prueba
+    private double temp; // Temperatura
+
 }

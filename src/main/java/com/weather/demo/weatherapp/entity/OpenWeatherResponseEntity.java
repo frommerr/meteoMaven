@@ -17,4 +17,17 @@ import lombok.Setter;
 public class OpenWeatherResponseEntity {
     @JsonProperty("weather")
     private WeatherEntity[] weather;
+
+    @JsonProperty("main")
+    private Main main;
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class Main {
+        @JsonProperty("temp")
+        private double temp;
+    }
 }
