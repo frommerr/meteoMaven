@@ -12,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Objects;
+
 @Service
 public class GeocodingProvider {
     @Value("${api.key}")
@@ -32,7 +34,9 @@ public class GeocodingProvider {
         UriComponents uriBuilder = UriComponentsBuilder.fromHttpUrl(geocodingUrl)
                 .queryParam("q", weatherRequestDetails.getCity())
                 .queryParam("limit", "1")
-                .queryParam("appid", apiKey).build();
+                .queryParam("appid", apiKey)
+                .build();
+
 
         try {
             responseEntity = restTemplate
@@ -44,7 +48,7 @@ public class GeocodingProvider {
             throw new Exception(e.getMessage());
         }
 
-        return  responseEntity.getBody()[0];
+        return  Objects.requireNonNull(responseEntity.getBody())[0];
 
     }
 }
