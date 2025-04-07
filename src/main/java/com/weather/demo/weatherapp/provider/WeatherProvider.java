@@ -32,6 +32,7 @@ public class WeatherProvider {
                 .queryParam("lon", cityCoordinates.getLongitude())
                 .queryParam("appid", apiKey)
                 .queryParam("units", "metric") // cambia al sistema metrico
+                .queryParam("lang", "sp") // cambia el idioma a español
                 .build();
 
         try {

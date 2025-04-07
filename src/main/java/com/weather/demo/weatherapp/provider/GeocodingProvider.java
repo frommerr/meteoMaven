@@ -28,7 +28,7 @@ public class GeocodingProvider {
         RestTemplate restTemplate = new RestTemplate();
         final ResponseEntity<GeocodingCoordinatesEntity[]> responseEntity;
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(null,null);
+        HttpEntity<String> requestEntity = new HttpEntity<>(null, null);
 
         //build URL
         UriComponents uriBuilder = UriComponentsBuilder.fromHttpUrl(geocodingUrl)
@@ -48,7 +48,7 @@ public class GeocodingProvider {
             throw new Exception(e.getMessage());
         }
 
-        return  Objects.requireNonNull(responseEntity.getBody())[0];
+        return Objects.requireNonNull(responseEntity.getBody())[0];
 
     }
 }
