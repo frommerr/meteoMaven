@@ -32,5 +32,11 @@ public class OpenWeatherResponseEntity {
 
         @JsonProperty("feels_like")
         private double feels_like;
+
+        @JsonProperty("humidity")
+        private int humidity;
+
+        @JsonProperty("pressure")
+        private int pressure;
     }
 }

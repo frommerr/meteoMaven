@@ -18,4 +18,7 @@ public class WeatherResponse {
     private double temp; // Temperatura
     private double feels_like; // Sensación térmica
 
+    private int humidity; // Humedad
+    private int pressure; // Presión atmosférica
+
 }

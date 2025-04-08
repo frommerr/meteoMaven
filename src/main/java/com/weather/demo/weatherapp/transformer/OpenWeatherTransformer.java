@@ -15,6 +15,9 @@ public class OpenWeatherTransformer {
                 .id(entity.getWeather()[0].getId()) // ID de prueba
                 .temp(entity.getMain().getTemp()) // Mapear la variable temp
                 .feels_like(entity.getMain().getFeels_like()) // Mapear la variable feels_like
+
+                .humidity(entity.getMain().getHumidity()) // Mapear la variable humidity
+                .pressure(entity.getMain().getPressure()) // Mapear la variable pressure
                 .build();
     }
 
@@ -25,6 +28,9 @@ public class OpenWeatherTransformer {
                 .id(cityWeather.getId()) // ID de prueba
                 .temp(cityWeather.getTemp()) // Mapear la variable temp
                 .feels_like(cityWeather.getFeels_like()) // Mapear la variable feels_like
+
+                .humidity(cityWeather.getHumidity()) // Mapear la variable humidity
+                .pressure(cityWeather.getPressure()) // Mapear la variable pressure
                 .build();
     }
 }
