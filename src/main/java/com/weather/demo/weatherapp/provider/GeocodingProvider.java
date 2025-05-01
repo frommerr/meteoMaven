@@ -16,6 +16,7 @@ import java.util.Objects;
 
 @Service
 public class GeocodingProvider {
+
     @Value("${api.key}")
     private String apiKey;
 
@@ -23,20 +24,17 @@ public class GeocodingProvider {
     private String geocodingUrl;
 
     public GeocodingCoordinatesEntity getCoordinates(final WeatherRequestDetails weatherRequestDetails) throws Exception {
-        //goecoding API call
-
         RestTemplate restTemplate = new RestTemplate();
         final ResponseEntity<GeocodingCoordinatesEntity[]> responseEntity;
 
         HttpEntity<String> requestEntity = new HttpEntity<>(null, null);
 
-        //build URL
+        // Build URL
         UriComponents uriBuilder = UriComponentsBuilder.fromHttpUrl(geocodingUrl)
                 .queryParam("q", weatherRequestDetails.getCity())
                 .queryParam("limit", "1")
                 .queryParam("appid", apiKey)
                 .build();
-
 
         try {
             responseEntity = restTemplate
@@ -45,10 +43,15 @@ public class GeocodingProvider {
                             requestEntity,
                             GeocodingCoordinatesEntity[].class);
         } catch (HttpStatusCodeException e) {
-            throw new Exception(e.getMessage());
+            throw new Exception("Error while calling Geocoding API: " + e.getMessage(), e);
         }
 
-        return Objects.requireNonNull(responseEntity.getBody())[0];
+        // Validate response
+        GeocodingCoordinatesEntity[] responseBody = responseEntity.getBody();
+        if (responseBody == null || responseBody.length == 0) {
+            throw new Exception("Geocoding API returned null or empty response.");
+        }
 
+        return Objects.requireNonNull(responseBody[0]);
     }
 }

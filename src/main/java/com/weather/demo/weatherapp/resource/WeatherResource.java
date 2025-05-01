@@ -1,40 +1,46 @@
-/*
- * Copyright (C) 2025 Leetjourney
- * Licensed under the CC BY-NC 4.0 License.
- * See LICENSE file for details.
- */
 package com.weather.demo.weatherapp.resource;
 
-import com.weather.demo.weatherapp.domain.WeatherRequestDetails;
-import com.weather.demo.weatherapp.entity.WeatherResponse;
-import com.weather.demo.weatherapp.service.WeatherService;
+import com.weather.demo.weatherapp.model.WeatherRecord;
+import com.weather.demo.weatherapp.service.WeatherRecordService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/weather")
 public class WeatherResource {
 
-    private WeatherService weatherService;
+    private static final Logger logger = LoggerFactory.getLogger(WeatherResource.class);
 
     @Autowired
-    public WeatherResource( final WeatherService weatherService) {
-        this.weatherService = weatherService;
-    }
+    private WeatherRecordService weatherRecordService;
 
-    @GetMapping("/weather/{city}")
-    public @ResponseBody WeatherResponse weather(@PathVariable("city") String city) throws Exception {
+    @GetMapping("/{city}")
+    public ResponseEntity<?> getWeather(@PathVariable("city") String city) {
+        logger.info("Solicitud recibida para ciudad: {}", city);
 
-        //input validation
+        // Simulación de datos obtenidos de la API externa para la ciudad
+        Map<String, Object> weatherData = Map.of(
+                "weather", "Clouds",
+                "details", "muy nuboso",
+                "id", "803",
+                "temp", 20.63,
+                "feels_like", 20.52,
+                "humidity", 68,
+                "pressure", 1015
+        );
 
-        final WeatherRequestDetails weatherRequestDetails = WeatherRequestDetails.builder()
-                .city(city)
-                .build();
-
-        return weatherService.getWeather(weatherRequestDetails);
+        try {
+            // Llamar al servicio para guardar los datos en la base de datos
+            WeatherRecord savedRecord = weatherRecordService.saveWeatherData(weatherData);
+            return ResponseEntity.ok(savedRecord);
+        } catch (Exception e) {
+            logger.error("Error al procesar la solicitud: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body("Ocurrió un error al procesar la solicitud.");
+        }
     }
 }

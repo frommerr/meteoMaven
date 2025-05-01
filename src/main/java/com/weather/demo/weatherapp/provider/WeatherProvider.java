@@ -12,8 +12,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Objects;
+
 @Service
 public class WeatherProvider {
+
     @Value("${api.key}")
     private String apiKey;
 
@@ -24,15 +27,15 @@ public class WeatherProvider {
         RestTemplate restTemplate = new RestTemplate();
         final ResponseEntity<OpenWeatherResponseEntity> responseEntity;
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(null,null);
+        HttpEntity<String> requestEntity = new HttpEntity<>(null, null);
 
-        //build URL
+        // Build URL
         UriComponents uriBuilder = UriComponentsBuilder.fromHttpUrl(weatherUrl)
                 .queryParam("lat", cityCoordinates.getLatitude())
                 .queryParam("lon", cityCoordinates.getLongitude())
                 .queryParam("appid", apiKey)
-                .queryParam("units", "metric") // cambia al sistema metrico
-                .queryParam("lang", "sp") // cambia el idioma a español
+                .queryParam("units", "metric") // Use metric system
+                .queryParam("lang", "sp")     // Set language to Spanish
                 .build();
 
         try {
@@ -42,10 +45,15 @@ public class WeatherProvider {
                             requestEntity,
                             OpenWeatherResponseEntity.class);
         } catch (HttpStatusCodeException e) {
-            throw new Exception(e.getMessage());
+            throw new Exception("Error while calling Weather API: " + e.getMessage(), e);
         }
 
-        return  responseEntity.getBody();
+        // Validate response
+        OpenWeatherResponseEntity responseBody = responseEntity.getBody();
+        if (responseBody == null || responseBody.getWeather() == null || responseBody.getWeather().length == 0) {
+            throw new Exception("Weather API returned null or empty response.");
+        }
 
+        return responseBody;
     }
 }
