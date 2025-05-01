@@ -7,10 +7,6 @@ import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -27,10 +23,10 @@ public class WeatherApiService {
     @Value("${api.key}")
     private String apiKey;
 
-    public Map<String, Object> getCurrentWeather() {
+    public Map<String, Object> getCurrentWeather(String city) {
         try {
-            // URL con la API key y los parámetros
-            String url = weatherUrl + "?q=Madrid&appid=" + apiKey + "&units=metric&lang=es";
+            // Construir la URL dinámica con la ciudad proporcionada
+            String url = String.format("%s?q=%s&appid=%s&units=metric&lang=es", weatherUrl, city, apiKey);
 
             logger.info("Consultando API de clima: {}", url.replace(apiKey, "API_KEY"));
 
@@ -38,36 +34,10 @@ public class WeatherApiService {
             Map<String, Object> apiResponse = restTemplate.getForObject(url, Map.class);
             logger.info("Respuesta recibida de la API con {} elementos", apiResponse.size());
 
-            return apiResponse; // Devolver la respuesta sin transformar
+            return apiResponse; // Devolver la respuesta obtenida
         } catch (Exception e) {
             logger.error("Error al obtener datos del clima: " + e.getMessage(), e);
-            return getFallbackWeatherData();
+            throw new RuntimeException("Error al consultar la API de clima.", e);
         }
-    }
-
-    private Map<String, Object> getFallbackWeatherData() {
-        // Crear un objeto con la misma estructura que devuelve la API de OpenWeather
-        Map<String, Object> fallback = new HashMap<>();
-
-        // Datos de clima principal (main)
-        Map<String, Object> main = new HashMap<>();
-        main.put("temp", 16.5);
-        main.put("feels_like", 15.8);
-        main.put("humidity", 60);
-        main.put("pressure", 1013);
-        fallback.put("main", main);
-
-        // Array weather
-        List<Map<String, Object>> weatherList = new ArrayList<>();
-        Map<String, Object> weather = new HashMap<>();
-        weather.put("id", 802);
-        weather.put("main", "Clouds");
-        weather.put("description", "nubes dispersas");
-        weather.put("icon", "03d");
-        weatherList.add(weather);
-        fallback.put("weather", weatherList);
-
-        logger.info("Devolviendo datos de respaldo (fallback)");
-        return fallback;
     }
 }

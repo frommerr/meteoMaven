@@ -23,13 +23,33 @@ public class WeatherRecordService {
 
         try {
             WeatherRecord record = new WeatherRecord();
-            record.setWeather((String) weatherData.get("weather"));
-            record.setDetails((String) weatherData.get("details"));
-            record.setWeatherId((String) weatherData.get("id"));
-            record.setTemperature(Double.valueOf(weatherData.get("temp").toString()));
-            record.setFeelsLike(Double.valueOf(weatherData.get("feels_like").toString()));
-            record.setHumidity(Integer.valueOf(weatherData.get("humidity").toString()));
-            record.setPressure(Integer.valueOf(weatherData.get("pressure").toString()));
+
+            // Extraer el primer elemento del array "weather"
+            var weatherArray = (java.util.List<Map<String, Object>>) weatherData.get("weather");
+            if (weatherArray != null && !weatherArray.isEmpty()) {
+                Map<String, Object> weatherDetails = weatherArray.get(0);
+                record.setWeather((String) weatherDetails.getOrDefault("main", "Unknown")); // Ejemplo: "Clouds"
+                record.setDetails((String) weatherDetails.getOrDefault("description", "No description")); // Ejemplo: "algo de nubes"
+            } else {
+                record.setWeather("Unknown");
+                record.setDetails("No description");
+            }
+
+            // Convertir "id" a String si es necesario
+            Object weatherId = weatherData.get("id");
+            record.setWeatherId(weatherId != null ? weatherId.toString() : "N/A");
+
+            // Extraer datos del mapa "main"
+            var mainData = (Map<String, Object>) weatherData.get("main");
+            if (mainData != null) {
+                record.setTemperature(parseDouble(mainData.get("temp"), 0.0));
+                record.setFeelsLike(parseDouble(mainData.get("feels_like"), 0.0));
+                record.setHumidity(parseInteger(mainData.get("humidity"), 0));
+                record.setPressure(parseInteger(mainData.get("pressure"), 0));
+            } else {
+                logger.warn("No se encontró la clave 'main' en los datos del clima.");
+            }
+
             record.setConsultTimestamp(LocalDateTime.now());
 
             WeatherRecord savedRecord = repository.save(record);
@@ -38,6 +58,25 @@ public class WeatherRecordService {
         } catch (Exception e) {
             logger.error("Error al guardar datos del clima: {}", e.getMessage(), e);
             throw e; // Re-lanzar la excepción para que pueda ser manejada a nivel superior si es necesario
+        }
+    }
+
+    // Métodos auxiliares para manejar los valores y evitar NullPointerException
+    private Double parseDouble(Object value, Double defaultValue) {
+        try {
+            return value != null ? Double.valueOf(value.toString()) : defaultValue;
+        } catch (NumberFormatException e) {
+            logger.warn("No se pudo convertir el valor {} a Double. Usando valor predeterminado {}", value, defaultValue);
+            return defaultValue;
+        }
+    }
+
+    private Integer parseInteger(Object value, Integer defaultValue) {
+        try {
+            return value != null ? Integer.valueOf(value.toString()) : defaultValue;
+        } catch (NumberFormatException e) {
+            logger.warn("No se pudo convertir el valor {} a Integer. Usando valor predeterminado {}", value, defaultValue);
+            return defaultValue;
         }
     }
 }
