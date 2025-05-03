@@ -9,20 +9,33 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-@Service
+// Servicio que se encarga de comunicarse con APIs externas de clima
+// Proporciona métodos para consultar información meteorológica actual
+@Service // Marca esta clase como un componente de servicio gestionado por Spring
 public class WeatherApiService {
 
+    // Configuración del logger para registrar eventos y errores durante la ejecución
     private static final Logger logger = LoggerFactory.getLogger(WeatherApiService.class);
 
+    // Cliente HTTP para realizar peticiones a la API externa
     @Autowired
     private RestTemplate restTemplate;
 
+    // URL base del servicio de clima configurada en propiedades de la aplicación
     @Value("${weather.url}")
     private String weatherUrl;
 
+    // Clave de acceso para la API de clima configurada en propiedades de la aplicación
     @Value("${api.key}")
     private String apiKey;
 
+    /**
+     * Obtiene datos meteorológicos actuales para una ciudad específica
+     *
+     * @param city Nombre de la ciudad para la cual se solicita información
+     * @return Mapa con los datos meteorológicos obtenidos de la API externa
+     * @throws RuntimeException si ocurre algún error en la comunicación con la API
+     */
     public Map<String, Object> getCurrentWeather(String city) {
         try {
             // Construir la URL dinámica con la ciudad proporcionada
