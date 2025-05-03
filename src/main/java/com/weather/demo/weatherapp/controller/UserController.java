@@ -30,12 +30,14 @@ public class UserController {
                         .body("El número de teléfono ya está registrado.");
             }
 
+            /*
             // Verificar si el código de país es válido
             String countryCode = user.getPhoneNumber().substring(0, user.getPhoneNumber().indexOf("9") - 1); // Extraer código
             if (!VALID_COUNTRY_CODES.contains(countryCode)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("El código de país no es válido: " + countryCode);
             }
+            */
 
             // Guardar el usuario en la base de datos
             userRepository.save(user);

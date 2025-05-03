@@ -49,21 +49,25 @@ public class WeatherSchedulerService {
         }
     }
 
-    // Método para verificar condiciones extremas y enviar notificaciones
+    // Metodo para verificar condiciones extremas y enviar notificaciones
     private void checkAndNotifyExtremeConditions(Map<String, Object> weatherData) {
         try {
-            // Extraer datos del mapa "main"
-            Map<String, Object> mainData = (Map<String, Object>) weatherData.get("main");
-            if (mainData != null) {
-                Double temperature = (Double) mainData.get("temp");
+            logger.info("Verificando condiciones extremas: {}", weatherData);
 
-                // Detectar condiciones extremas
-                if (temperature > 40.0) {
-                    sendNotifications("Advertencia: Altas temperaturas en tu zona (" + temperature + "ºC)");
-                } else if (temperature < 0.0) {
-                    sendNotifications("Advertencia: Bajas temperaturas en tu zona (" + temperature + "ºC)");
-                }
+            // Acceder al campo "temperature" como String y convertirlo a Double
+            String temperatureStr = (String) weatherData.get("temperature");
+            Double temperature = Double.parseDouble(temperatureStr);
+
+            // Detectar condiciones extremas
+            if (temperature > 40.0) {
+                logger.info("Condición extrema detectada: temperatura alta ({} °C)", temperature);
+                sendNotifications("Advertencia: Altas temperaturas en tu zona (" + temperature + "°C)");
+            } else if (temperature < 0.0) {
+                logger.info("Condición extrema detectada: temperatura baja ({} °C)", temperature);
+                sendNotifications("Advertencia: Bajas temperaturas en tu zona (" + temperature + "°C)");
             }
+        } catch (NumberFormatException e) {
+            logger.error("Error al convertir la temperatura a Double: {}", e.getMessage(), e);
         } catch (Exception e) {
             logger.error("Error al verificar condiciones extremas: {}", e.getMessage(), e);
         }
