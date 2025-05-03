@@ -2,51 +2,62 @@ package com.weather.demo.weatherapp.controller;
 
 import com.weather.demo.weatherapp.model.User;
 import com.weather.demo.weatherapp.repository.UserRepository;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
+    private static final Set<String> VALID_COUNTRY_CODES = Set.of("30", "31", "32", "33", "34", "36", "39", "40", "41", "43", "44", "45", "46", "47", "48", "49", "351", "352", "353", "354", "355", "356", "357", "358", "359", "370", "371", "372", "373", "374", "375", "376", "377", "378", "379", "380", "381", "382", "383", "385", "386", "387", "389", "420", "421", "423"); // Agrega los códigos válidos
+
     @Autowired
     private UserRepository userRepository;
 
-    // Lista de códigos de país válidos (puedes expandirla según sea necesario)
-    private static final List<String> VALID_COUNTRY_CODES = Arrays.asList("+34", "+1", "+44", "+49", "+33");
-
     @PostMapping
-    public ResponseEntity<String> registerUser(@Valid @RequestBody User user) {
+    public ResponseEntity<String> addUser(@RequestBody User user) {
         try {
-            // Verificar si el número de teléfono ya existe
-            if (userRepository.existsByPhoneNumber(user.getPhoneNumber())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("El número de teléfono ya está registrado.");
-            }
-
-            // TODO: Corregir la logica de comprobacion de codigo del pais
-            /*
-            // Verificar si el código de país es válido
-            String countryCode = user.getPhoneNumber().substring(0, user.getPhoneNumber().indexOf("9") - 1); // Extraer código
-            if (!VALID_COUNTRY_CODES.contains(countryCode)) {
+            // Validar el número completo
+            String phoneNumber = user.getPhoneNumber();
+            if (!isValidPhoneNumber(phoneNumber)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("El código de país no es válido: " + countryCode);
+                        .body("El número de teléfono no es válido: " + phoneNumber);
             }
-            */
 
             // Guardar el usuario en la base de datos
             userRepository.save(user);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Usuario registrado exitosamente.");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado correctamente.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al registrar el usuario: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrió un error inesperado.");
         }
+    }
+
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    // Metodo auxiliar para validar el número completo
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        // Verificar que el número comience con "+"
+        if (!phoneNumber.startsWith("+")) {
+            return false;
+        }
+
+        // Extraer el código de país
+        String countryCode = phoneNumber.substring(1, phoneNumber.length() - 9); // Asume que los últimos 9 dígitos son el número móvil
+        if (!VALID_COUNTRY_CODES.contains(countryCode)) {
+            return false;
+        }
+
+        // Validar la longitud total del número
+        return phoneNumber.matches("^\\+\\d{1,4}\\d{9}$");
     }
 }
