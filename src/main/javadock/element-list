@@ -1,0 +1,11 @@
+com.weather.demo.weatherapp
+com.weather.demo.weatherapp.config
+com.weather.demo.weatherapp.controller
+com.weather.demo.weatherapp.domain
+com.weather.demo.weatherapp.entity
+com.weather.demo.weatherapp.model
+com.weather.demo.weatherapp.provider
+com.weather.demo.weatherapp.repository
+com.weather.demo.weatherapp.resource
+com.weather.demo.weatherapp.service
+com.weather.demo.weatherapp.transformer
