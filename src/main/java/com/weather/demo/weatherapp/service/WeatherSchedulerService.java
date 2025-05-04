@@ -9,32 +9,47 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime; // Importar para manejar timestamps
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-@Service
+// Servicio que programa y ejecuta consultas periódicas al servicio meteorológico
+// Se encarga de detectar condiciones climáticas extremas y enviar alertas a usuarios
+@Service // Marca esta clase como un componente de servicio gestionado por Spring
 public class WeatherSchedulerService {
 
+    // Configuración del logger para registrar eventos y errores durante la ejecución
     private static final Logger logger = LoggerFactory.getLogger(WeatherSchedulerService.class);
 
+    // Cliente HTTP para realizar peticiones al API de clima
     @Autowired
     private RestTemplate restTemplate;
 
+    // Servicio para enviar notificaciones SMS a los usuarios
     @Autowired
     private SmsNotificationService smsNotificationService;
 
+    // Repositorio para acceder a la información de usuarios registrados
     @Autowired
     private UserRepository userRepository;
 
+    // URL del endpoint local que proporciona información meteorológica
     private static final String WEATHER_API_URL = "http://localhost:8080/api/v1/weather/jumilla";
 
-    private boolean extremeConditionDetected = false; // Indicador para condiciones extremas
-    private String extremeConditionMessage = ""; // Mensaje específico de la condición extrema
-    private LocalDateTime extremeConditionTimestamp; // Tiempo de detección de la condición extrema
+    // Estado que indica si se ha detectado alguna condición meteorológica extrema
+    private boolean extremeConditionDetected = false;
 
-    // Realiza la llamada a la API cada 10 minutos para verificar condiciones extremas
+    // Mensaje descriptivo sobre la condición extrema detectada
+    private String extremeConditionMessage = "";
+
+    // Momento exacto en que se detectó la condición extrema
+    private LocalDateTime extremeConditionTimestamp;
+
+    /**
+     * Consulta periódica a la API de clima para verificar condiciones extremas
+     * Se ejecuta automáticamente cada 10 minutos
+     */
     @Scheduled(fixedRate = 600000) // 10 minutos en milisegundos
     public void fetchWeatherData() {
         try {
@@ -54,7 +69,10 @@ public class WeatherSchedulerService {
         }
     }
 
-    // Este metodo se ejecuta cada 6 horas para enviar notificaciones si se detectaron condiciones extremas
+    /**
+     * Envía notificaciones por SMS si se detectaron condiciones meteorológicas extremas
+     * Se ejecuta automáticamente cada 6 horas
+     */
     @Scheduled(cron = "0 0 */6 * * *") // Cada 6 horas
     public void sendExtremeWeatherNotifications() {
         if (extremeConditionDetected) {
@@ -62,15 +80,18 @@ public class WeatherSchedulerService {
             String formattedTimestamp = extremeConditionTimestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             String messageWithTimestamp = extremeConditionMessage + " Detectado a las: " + formattedTimestamp;
             sendNotifications(messageWithTimestamp);
-            extremeConditionDetected = false; // Restablecer indicador después de enviar las notificaciones
-            extremeConditionMessage = ""; // Limpiar el mensaje después de enviarlo
-            extremeConditionTimestamp = null; // Limpiar el tiempo de detección
+            extremeConditionDetected = false; // Restablecer indicador
+            extremeConditionMessage = ""; // Limpiar mensaje
+            extremeConditionTimestamp = null; // Limpiar timestamp
         } else {
             logger.info("No se detectaron condiciones extremas en las últimas 6 horas.");
         }
     }
 
-    // Verifica si hay condiciones extremas y ajusta el indicador, mensaje y tiempo de detección
+    /**
+     * Analiza los datos meteorológicos en busca de condiciones extremas
+     * Establece banderas y mensajes cuando detecta situaciones de alerta
+     */
     private void checkAndSetExtremeConditions(Map<String, Object> weatherData) {
         try {
             logger.info("Verificando condiciones extremas: {}", weatherData);
@@ -78,17 +99,17 @@ public class WeatherSchedulerService {
             String temperatureStr = (String) weatherData.get("temperature");
             Double temperature = Double.parseDouble(temperatureStr);
 
-            // Detectar condiciones extremas (ajustado para pruebas)
-            if (temperature > 40.0) { // Cambia este umbral según los requisitos
+            // Detectar condiciones extremas por temperatura
+            if (temperature > 40.0) {
                 logger.info("Condición extrema detectada: temperatura alta ({} °C)", temperature);
                 extremeConditionDetected = true;
                 extremeConditionMessage = "Advertencia: Altas temperaturas en tu zona (" + temperature + "°C)";
-                extremeConditionTimestamp = LocalDateTime.now(); // Capturar el tiempo actual
+                extremeConditionTimestamp = LocalDateTime.now();
             } else if (temperature < 0.0) {
                 logger.info("Condición extrema detectada: temperatura baja ({} °C)", temperature);
                 extremeConditionDetected = true;
                 extremeConditionMessage = "Advertencia: Bajas temperaturas en tu zona (" + temperature + "°C)";
-                extremeConditionTimestamp = LocalDateTime.now(); // Capturar el tiempo actual
+                extremeConditionTimestamp = LocalDateTime.now();
             }
         } catch (NumberFormatException e) {
             logger.error("Error al convertir la temperatura a Double: {}", e.getMessage(), e);
@@ -97,7 +118,11 @@ public class WeatherSchedulerService {
         }
     }
 
-    // Envía notificaciones a todos los usuarios registrados
+    /**
+     * Envía notificaciones SMS a todos los usuarios registrados en el sistema
+     *
+     * @param message Mensaje de alerta a enviar a los usuarios
+     */
     private void sendNotifications(String message) {
         List<User> users = userRepository.findAll();
 
