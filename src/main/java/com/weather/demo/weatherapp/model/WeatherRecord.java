@@ -9,38 +9,25 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-// Clase entidad que almacena registros históricos de condiciones meteorológicas consultadas
-@Entity // Define esta clase como entidad persistible en la base de datos
-@Getter // Genera automáticamente métodos getter para todos los campos
-@Setter // Genera automáticamente métodos setter para todos los campos
+@Entity
+@Getter
+@Setter
 public class WeatherRecord {
 
-    // Identificador único autogenerado para cada registro meteorológico
-    @Id // Marca este campo como la clave primaria de la entidad
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Configura la generación automática incremental de valores
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Condición meteorológica principal (por ejemplo: Rain, Snow, Clouds, Clear)
     private String weather;
-
-    // Descripción detallada de la condición meteorológica
     private String details;
-
-    // Identificador original de la condición meteorológica en la API externa
-    private String weatherId; // Para evitar conflicto con el ID de la entidad
-
-    // Temperatura registrada en grados Celsius
+    private String weatherId;
     private Double temperature;
-
-    // Temperatura percibida por el cuerpo humano en grados Celsius
     private Double feelsLike;
-
-    // Porcentaje de humedad en el aire
     private Integer humidity;
-
-    // Presión atmosférica en hPa (hectopascales)
     private Integer pressure;
-
-    // Fecha y hora en que se realizó la consulta meteorológica
+    private Double windSpeed;
+    private Integer windDeg;
+    private Double windGust;
+    private Double rain1h;
     private LocalDateTime consultTimestamp;
 }

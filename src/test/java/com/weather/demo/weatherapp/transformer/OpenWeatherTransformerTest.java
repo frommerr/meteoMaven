@@ -1,52 +1,55 @@
 package com.weather.demo.weatherapp.transformer;
 
-import com.weather.demo.weatherapp.domain.CityWeather;
 import com.weather.demo.weatherapp.entity.OpenWeatherResponseEntity;
-import com.weather.demo.weatherapp.entity.WeatherEntity;
-import com.weather.demo.weatherapp.entity.WeatherResponse;
-import org.junit.jupiter.api.BeforeEach;
+import com.weather.demo.weatherapp.domain.CityWeather;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OpenWeatherTransformerTest {
-    private OpenWeatherTransformer transformer;
-
-    @BeforeEach
-    public void setup() {
-        transformer = new OpenWeatherTransformer();
-    }
 
     @Test
-    public void test_should_transform_open_weather_response_entity_to_domain() {
-        final WeatherEntity weather = WeatherEntity.builder()
-                .main("Rain")
-                .description("A lot of rain")
-                .build();
-        final WeatherEntity[] weatherEntities = {weather};
-        final OpenWeatherResponseEntity entity = OpenWeatherResponseEntity.builder()
-                .weather(weatherEntities)
+    void testTransformToDomain() {
+        // Construir el arreglo de tipo OpenWeatherResponseEntity.Weather[]
+        OpenWeatherResponseEntity.Weather[] weatherArray = new OpenWeatherResponseEntity.Weather[]{
+                OpenWeatherResponseEntity.Weather.builder()
+                        .main("Clear")
+                        .description("clear sky")
+                        .id(800)
+                        .build()
+        };
+
+        // Construir el objeto OpenWeatherResponseEntity
+        OpenWeatherResponseEntity responseEntity = OpenWeatherResponseEntity.builder()
+                .weather(weatherArray)
+                .main(OpenWeatherResponseEntity.Main.builder()
+                        .temp(25.0)
+                        .feels_like(24.5)
+                        .humidity(60)
+                        .pressure(1012)
+                        .build())
+                .wind(OpenWeatherResponseEntity.Wind.builder()
+                        .speed(5.5)
+                        .deg(180)
+                        .gust(8.0)
+                        .build())
+                .rain(null) // Si no hay datos de lluvia
                 .build();
 
-        final CityWeather cityWeather = transformer.transformToDomain(entity);
+        // Transformar usando el transformer
+        OpenWeatherTransformer transformer = new OpenWeatherTransformer();
+        CityWeather cityWeather = transformer.transformToDomain(responseEntity);
 
-        assertAll("Should return domain weather object",
-                () -> assertEquals(entity.getWeather()[0].getMain(), cityWeather.getWeather()),
-                () -> assertEquals(entity.getWeather()[0].getDescription(), cityWeather.getDetails()));
+        // Validar los resultados
+        assertEquals("Clear", cityWeather.getWeather());
+        assertEquals("clear sky", cityWeather.getDetails());
+        assertEquals("800", cityWeather.getId());
+        assertEquals(25.0, cityWeather.getTemp());
+        assertEquals(24.5, cityWeather.getFeels_like());
+        assertEquals(60, cityWeather.getHumidity());
+        assertEquals(1012, cityWeather.getPressure());
+        assertEquals(5.5, cityWeather.getWindSpeed());
+        assertEquals(180, cityWeather.getWindDeg());
+        assertEquals(8.0, cityWeather.getWindGust());
     }
-
-    @Test
-    public void test_should_transform_city_weather_to_entity() {
-        final CityWeather cityWeather = CityWeather.builder()
-                .weather("Rain")
-                .details("A lot of rain")
-                .build();
-
-        final WeatherResponse weatherResponse = transformer.transformToEntity(cityWeather);
-
-        assertAll("Should return entity weather response object",
-                () -> assertEquals(cityWeather.getWeather(), weatherResponse.getWeather()),
-                () -> assertEquals(cityWeather.getDetails(), weatherResponse.getDetails()));
-    }
-
 }
