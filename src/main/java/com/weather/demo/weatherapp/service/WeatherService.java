@@ -18,7 +18,6 @@ public class WeatherService {
     private WeatherProvider weatherProvider;
     private OpenWeatherTransformer openWeatherTransformer;
 
-    @Autowired
     public WeatherService(final GeocodingProvider geocodingProvider,
                           final GeocodingCoordinatesTransformer geocodingCoordinatesTransformer,
                           final WeatherProvider weatherProvider,
