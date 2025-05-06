@@ -7,11 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 // Servicio que proporciona funcionalidad para enviar notificaciones SMS
-// utilizando la plataforma Twilio como proveedor de mensajería
-@Service // Marca esta clase como un componente de servicio gestionado por Spring
+@Service
 public class SmsNotificationService {
 
-    // Configuración del logger para registrar eventos y errores durante la ejecución
     private static final Logger logger = LoggerFactory.getLogger(SmsNotificationService.class);
 
     // Número de teléfono remitente configurado en las propiedades de la aplicación
@@ -34,10 +32,21 @@ public class SmsNotificationService {
             ).create();
 
             // Registrar éxito en el envío
-            logger.info("Mensaje enviado exitosamente: SID={}", message.getSid());
+            logger.info("Mensaje enviado exitosamente a {}: SID={}", toPhoneNumber, message.getSid());
         } catch (Exception e) {
             // Registrar cualquier error durante el envío
-            logger.error("Error al enviar SMS: {}", e.getMessage(), e);
+            logger.error("Error al enviar SMS a {}: {}", toPhoneNumber, e.getMessage(), e);
         }
+    }
+
+    /**
+     * Envía un mensaje genérico para cualquier tipo de alerta.
+     *
+     * @param phoneNumber Número de teléfono del destinatario
+     * @param alertMessage Mensaje de alerta a enviar
+     */
+    public void sendAlertNotification(String phoneNumber, String alertMessage) {
+        logger.info("Enviando notificación de alerta: {} a {}", alertMessage, phoneNumber);
+        sendSms(phoneNumber, alertMessage);
     }
 }
