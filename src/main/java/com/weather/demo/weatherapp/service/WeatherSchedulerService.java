@@ -55,6 +55,9 @@ public class WeatherSchedulerService {
         }
     }
 
+    // cron de 6 horas: cron = "0 0 */6 * * *"
+    // cron de 1 minuto: cron = "0 * * * * *"
+
     @Scheduled(cron = "0 0 */6 * * *")
     public void sendExtremeWeatherNotifications() {
         if (extremeConditionDetected) {
