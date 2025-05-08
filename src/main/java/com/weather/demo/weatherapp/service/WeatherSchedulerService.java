@@ -78,7 +78,6 @@ public class WeatherSchedulerService {
             logger.info("Verificando condiciones extremas: {}", weatherData);
             detectExtremeTemperature(weatherData);
             detectExtremeWind(weatherData);
-            detectExtremeRain(weatherData);
         } catch (Exception e) {
             logger.error("Error al verificar condiciones extremas: {}", e.getMessage(), e);
         }
@@ -115,32 +114,7 @@ public class WeatherSchedulerService {
         }
     }
 
-    private void detectExtremeRain(Map<String, Object> weatherData) {
-        try {
-            if (!weatherData.containsKey("rain")) {
-                logger.warn("El campo 'rain' está ausente en los datos meteorológicos.");
-                return;
-            }
 
-            Map<String, Object> rainData = (Map<String, Object>) weatherData.get("rain");
-
-            if (rainData == null || !rainData.containsKey("1h")) {
-                logger.warn("El volumen de lluvia ('rain.1h') está ausente en los datos meteorológicos. Datos actuales de 'rain': {}", rainData);
-                return;
-            }
-
-            Double rainVolume = Double.parseDouble(rainData.get("1h").toString());
-
-            if (rainVolume > 50.0) {
-                logger.info("Condición extrema detectada: lluvia intensa ({} mm)", rainVolume);
-                setExtremeCondition("Advertencia: Fuertes lluvias en tu zona (" + rainVolume + " mm en la última hora)");
-            }
-        } catch (NumberFormatException e) {
-            logger.error("Error al convertir el volumen de lluvia ('rain.1h') a Double: {}", e.getMessage(), e);
-        } catch (Exception e) {
-            logger.error("Error inesperado al verificar condiciones de lluvia extrema: {}", e.getMessage(), e);
-        }
-    }
 
     private void setExtremeCondition(String message) {
         extremeConditionDetected = true;

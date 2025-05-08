@@ -8,8 +8,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class WeatherAppApplication {
 
-	//TODO: Implementar hilos para mensajeria a los usuarios (Opcional)
-
 	//TODO: Meter campo de contraseña a la base de datos sel usuario
 	//TODO: Dar acceso al Aiven a Ivan
 
