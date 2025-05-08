@@ -20,7 +20,7 @@ public class OpenWeatherTransformer {
                 .windSpeed(entity.getWind().getSpeed())
                 .windDeg(entity.getWind().getDeg())
                 .windGust(entity.getWind().getGust())
-                .rain1h(entity.getRain() != null ? entity.getRain().get_1h() : 0.0) // Uso del atributo rain
+                .rain1h(entity.getRain() != null && entity.getRain().getOneHour() != null ? entity.getRain().getOneHour() : 0.0) // Verificar null para mayor robustez
                 .build();
     }
 

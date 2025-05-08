@@ -45,6 +45,6 @@ public class OpenWeatherResponseEntity {
     @Setter
     @Builder
     public static class Rain {
-        private Double _1h;
+        private Double oneHour; // Mapeado con el campo "1h" del JSON de la API
     }
 }

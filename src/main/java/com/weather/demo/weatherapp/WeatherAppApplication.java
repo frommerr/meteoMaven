@@ -8,10 +8,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class WeatherAppApplication {
 
-	//TODO: Añadir condiciones extremas al viento y lluvia (COMPLETADO)
-	//TODO: Arreglar el error con la consulta de lluvia (1h)
-	//TODO: Añdir temperatura maxima y minima al dia
-	//TODO: calculo personalizada de temperatura que se siente por radiacion solar
+	//TODO: Implementar hilos para mensajeria a los usuarios (Opcional)
+
+	//TODO: Meter campo de contraseña a la base de datos sel usuario
+	//TODO: Dar acceso al Aiven a Ivan
 
 	public static void main(String[] args) {
 		SpringApplication.run(WeatherAppApplication.class, args);

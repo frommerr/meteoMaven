@@ -30,7 +30,19 @@ public class WeatherApiService {
             logger.info("Consultando API de clima: {}", url.replace(apiKey, "API_KEY"));
 
             Map<String, Object> apiResponse = restTemplate.getForObject(url, Map.class);
-            logger.info("Respuesta recibida de la API con {} elementos", apiResponse.size());
+            logger.info("Respuesta recibida de la API con {} elementos", apiResponse != null ? apiResponse.size() : 0);
+
+            if (apiResponse != null && apiResponse.containsKey("rain")) {
+                Map<String, Object> rainData = (Map<String, Object>) apiResponse.get("rain");
+
+                if (rainData.containsKey("1h")) {
+                    logger.info("Volumen de lluvia en la última hora: {} mm", rainData.get("1h"));
+                } else {
+                    logger.warn("El campo '1h' no está presente en el objeto 'rain'.");
+                }
+            } else {
+                logger.warn("No se encontraron datos de lluvia en la respuesta de la API.");
+            }
 
             return apiResponse;
         } catch (Exception e) {
