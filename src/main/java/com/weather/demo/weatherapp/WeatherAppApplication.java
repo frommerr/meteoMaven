@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class WeatherAppApplication {
 
 	//TODO: Meter campo de contraseña a la base de datos sel usuario
-	//TODO: Dar acceso al Aiven a Ivan
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(WeatherAppApplication.class, args);
