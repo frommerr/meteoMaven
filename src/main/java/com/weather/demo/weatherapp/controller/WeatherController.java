@@ -8,20 +8,32 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-// Controlador REST que maneja las peticiones relacionadas con datos meteorológicos
+/**
+ * Controlador REST que gestiona las peticiones relacionadas con datos meteorológicos.
+ * Permite obtener y almacenar información del clima para una ciudad específica.
+ */
 @RestController
 @RequestMapping("/api/weather")
 public class WeatherController {
 
-    // Servicio para consultar la API externa de meteorología
+    /**
+     * Servicio para consultar la API externa de meteorología.
+     */
     @Autowired
     private WeatherApiService weatherApiService;
 
-    // Servicio para persistir los registros meteorológicos en la base de datos
+    /**
+     * Servicio para persistir los registros meteorológicos en la base de datos.
+     */
     @Autowired
     private WeatherRecordService weatherRecordService;
 
-    // Endpoint que obtiene y almacena datos meteorológicos para la ciudad especificada
+    /**
+     * Endpoint que obtiene y almacena datos meteorológicos para la ciudad especificada.
+     *
+     * @param city Nombre de la ciudad para la que se solicita la información meteorológica.
+     * @return Respuesta HTTP con los datos meteorológicos obtenidos.
+     */
     @GetMapping("/{city}")
     public ResponseEntity<Map<String, Object>> getWeather(@PathVariable("city") String city) {
         // Obtiene datos del clima para la ciudad especificada

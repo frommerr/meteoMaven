@@ -3,14 +3,19 @@ package com.weather.demo.weatherapp.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.weather.demo.weatherapp.model.ExampleEntity;
 
-// Interfaz repositorio que gestiona operaciones de persistencia para entidades ExampleEntity
-// Proporciona métodos CRUD predefinidos gracias a la extensión de JpaRepository
+/**
+ * Repositorio de acceso a datos para la entidad {@link ExampleEntity}.
+ * Proporciona operaciones CRUD y consultas personalizadas mediante Spring Data JPA.
+ * <p>
+ * Al extender {@code JpaRepository}, hereda métodos como:
+ * <ul>
+ *   <li>save()</li>
+ *   <li>findById()</li>
+ *   <li>findAll()</li>
+ *   <li>deleteById()</li>
+ * </ul>
+ * No requiere implementación manual, ya que Spring genera el código automáticamente.
+ */
 public interface ExampleEntityRepository extends JpaRepository<ExampleEntity, Long> {
-    // Al extender JpaRepository<ExampleEntity, Long>, esta interfaz:
-    // - Trabaja con entidades de tipo ExampleEntity
-    // - Usa Long como tipo de dato para la clave primaria
-    // - Hereda métodos como save(), findById(), findAll(), deleteById(), etc.
-
-    // No necesita implementación ya que Spring Data JPA genera automáticamente
-    // el código necesario en tiempo de ejecución
+    // Métodos CRUD y de consulta heredados de JpaRepository
 }

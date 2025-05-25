@@ -9,20 +9,43 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+/**
+ * Servicio encargado de consultar la API externa de clima para obtener información meteorológica actual de una ciudad.
+ * Utiliza un {@link RestTemplate} para realizar peticiones HTTP y procesa la respuesta recibida.
+ */
 @Service
 public class WeatherApiService {
 
+    /**
+     * Logger para registrar información y errores durante la consulta a la API de clima.
+     */
     private static final Logger logger = LoggerFactory.getLogger(WeatherApiService.class);
 
+    /**
+     * Cliente HTTP utilizado para realizar las peticiones a la API externa.
+     */
     @Autowired
     private RestTemplate restTemplate;
 
+    /**
+     * URL base de la API de clima, configurada en las propiedades de la aplicación.
+     */
     @Value("${weather.url}")
     private String weatherUrl;
 
+    /**
+     * Clave de acceso a la API de clima, configurada en las propiedades de la aplicación.
+     */
     @Value("${api.key}")
     private String apiKey;
 
+    /**
+     * Obtiene la información meteorológica actual de una ciudad consultando la API externa.
+     *
+     * @param city Nombre de la ciudad para la cual se solicita la información meteorológica.
+     * @return Un mapa con los datos meteorológicos obtenidos de la API.
+     * @throws RuntimeException si ocurre un error al consultar la API.
+     */
     public Map<String, Object> getCurrentWeather(String city) {
         try {
             String url = String.format("%s?q=%s&appid=%s&units=metric&lang=es", weatherUrl, city, apiKey);

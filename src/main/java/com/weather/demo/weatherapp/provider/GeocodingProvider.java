@@ -14,25 +14,31 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Objects;
 
-// Servicio proveedor que se encarga de convertir nombres de ciudades en coordenadas geográficas
-// mediante llamadas a una API externa de geocodificación
+/**
+ * Servicio proveedor encargado de obtener coordenadas geográficas (latitud y longitud)
+ * a partir del nombre de una ciudad, utilizando una API externa de geocodificación.
+ */
 @Service // Marca esta clase como un componente de servicio gestionado por Spring
 public class GeocodingProvider {
 
-    // Clave de API necesaria para autenticarse con el servicio de geocodificación externo
+    /**
+     * Clave de API necesaria para autenticarse con el servicio de geocodificación externo.
+     */
     @Value("${api.key}")
     private String apiKey;
 
-    // URL base del servicio de geocodificación que se utilizará para las consultas
+    /**
+     * URL base del servicio de geocodificación que se utilizará para las consultas.
+     */
     @Value("${geocoding.url}")
     private String geocodingUrl;
 
     /**
-     * Obtiene las coordenadas geográficas (latitud y longitud) a partir del nombre de una ciudad
+     * Obtiene las coordenadas geográficas (latitud y longitud) a partir del nombre de una ciudad.
      *
-     * @param weatherRequestDetails Objeto que contiene los detalles de la solicitud, incluido el nombre de la ciudad
-     * @return Entidad con las coordenadas geográficas de la ciudad especificada
-     * @throws Exception Si ocurre un error durante la comunicación con la API o si la respuesta es inválida
+     * @param weatherRequestDetails Objeto que contiene los detalles de la solicitud, incluido el nombre de la ciudad.
+     * @return Entidad con las coordenadas geográficas de la ciudad especificada.
+     * @throws Exception Si ocurre un error durante la comunicación con la API o si la respuesta es inválida.
      */
     public GeocodingCoordinatesEntity getCoordinates(final WeatherRequestDetails weatherRequestDetails) throws Exception {
         RestTemplate restTemplate = new RestTemplate();

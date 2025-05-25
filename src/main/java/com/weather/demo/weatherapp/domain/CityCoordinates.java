@@ -4,14 +4,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-// Clase que representa las coordenadas geográficas de una ciudad
+/**
+ * Representa las coordenadas geográficas de una ciudad.
+ * Contiene la latitud y longitud en formato de cadena.
+ */
 @Builder
 @Setter
 @Getter
 public class CityCoordinates {
-    // Latitud de la ciudad en formato de cadena
+    /**
+     * Latitud de la ciudad en formato de cadena.
+     */
     private String latitude;
 
-    // Longitud de la ciudad en formato de cadena
+    /**
+     * Longitud de la ciudad en formato de cadena.
+     */
     private String longitude;
 }

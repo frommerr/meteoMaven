@@ -8,11 +8,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class WeatherAppApplication {
 
-	//TODO: Meter campo de contraseña a la base de datos sel usuario
+    //TODO: Modificar la tabla de usuario: idioma y (location que ya esta añadido)
 
-
-	public static void main(String[] args) {
-		SpringApplication.run(WeatherAppApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(WeatherAppApplication.class, args);
+    }
 
 }

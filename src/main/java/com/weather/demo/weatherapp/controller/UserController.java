@@ -10,30 +10,44 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-// Controlador REST que gestiona operaciones CRUD para usuario
+/**
+ * Controlador REST que gestiona operaciones CRUD para usuarios.
+ * Permite crear y listar usuarios, validando el formato del número de teléfono.
+ */
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    // Conjunto de códigos de país válidos para números de teléfono (códigos europeos)
-    private static final Set<String> VALID_COUNTRY_CODES = Set.of("30", "31", "32", "33", "34", "36", "39", "40", "41", "43", "44", "45", "46", "47", "48", "49", "351", "352", "353", "354", "355", "356", "357", "358", "359", "370", "371", "372", "373", "374", "375", "376", "377", "378", "379", "380", "381", "382", "383", "385", "386", "387", "389", "420", "421", "423"); // Agrega los códigos válidos
+    /**
+     * Conjunto de códigos de país válidos para números de teléfono (códigos europeos).
+     */
+    private static final Set<String> VALID_COUNTRY_CODES = Set.of(
+            "30", "31", "32", "33", "34", "36", "39", "40", "41", "43", "44", "45", "46", "47", "48", "49",
+            "351", "352", "353", "354", "355", "356", "357", "358", "359", "370", "371", "372", "373", "374",
+            "375", "376", "377", "378", "379", "380", "381", "382", "383", "385", "386", "387", "389", "420",
+            "421", "423"
+    );
 
-    // Repositorio para persistencia de datos de usuarios
+    /**
+     * Repositorio para la persistencia de datos de usuarios.
+     */
     @Autowired
     private UserRepository userRepository;
 
-    // Crea un nuevo usuario tras validar su número de teléfono
+    /**
+     * Crea un nuevo usuario tras validar su número de teléfono.
+     *
+     * @param user Objeto usuario recibido en el cuerpo de la petición.
+     * @return Respuesta HTTP indicando el resultado de la operación.
+     */
     @PostMapping
     public ResponseEntity<String> addUser(@RequestBody User user) {
         try {
-            // Validar el número completo
             String phoneNumber = user.getPhoneNumber();
             if (!isValidPhoneNumber(phoneNumber)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("El número de teléfono no es válido: " + phoneNumber);
             }
-
-            // Guardar el usuario en la base de datos
             userRepository.save(user);
             return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado correctamente.");
         } catch (IllegalArgumentException e) {
@@ -43,26 +57,30 @@ public class UserController {
         }
     }
 
-    // Devuelve la lista completa de todos los usuarios registrados
+    /**
+     * Devuelve la lista completa de todos los usuarios registrados.
+     *
+     * @return Lista de usuarios.
+     */
     @GetMapping
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // Valida que el número de teléfono tenga formato internacional válido con código de país europeo
+    /**
+     * Valida que el número de teléfono tenga formato internacional válido con código de país europeo.
+     *
+     * @param phoneNumber Número de teléfono a validar.
+     * @return true si el número es válido, false en caso contrario.
+     */
     private boolean isValidPhoneNumber(String phoneNumber) {
-        // Verificar que el número comience con "+"
         if (!phoneNumber.startsWith("+")) {
             return false;
         }
-
-        // Extrae el código de país
-        String countryCode = phoneNumber.substring(1, phoneNumber.length() - 9); // Asume que los últimos 9 dígitos son el número móvil
+        String countryCode = phoneNumber.substring(1, phoneNumber.length() - 9);
         if (!VALID_COUNTRY_CODES.contains(countryCode)) {
             return false;
         }
-
-        // Valida la longitud total del número
         return phoneNumber.matches("^\\+\\d{1,4}\\d{9}$");
     }
 }

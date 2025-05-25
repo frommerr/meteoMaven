@@ -6,21 +6,30 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-// Servicio que proporciona funcionalidad para enviar notificaciones SMS
+/**
+ * Servicio encargado de enviar notificaciones SMS utilizando la API de Twilio.
+ * Permite enviar mensajes personalizados o alertas a números de teléfono especificados.
+ */
 @Service
 public class SmsNotificationService {
 
+    /**
+     * Logger para registrar información y errores relacionados con el envío de SMS.
+     */
     private static final Logger logger = LoggerFactory.getLogger(SmsNotificationService.class);
 
-    // Número de teléfono remitente configurado en las propiedades de la aplicación
+    /**
+     * Número de teléfono remitente configurado en las propiedades de la aplicación.
+     * Este número debe estar registrado en Twilio.
+     */
     @Value("${twilio.phone.number}")
     private String fromPhoneNumber;
 
     /**
-     * Envía un mensaje SMS al número de teléfono especificado
+     * Envía un mensaje SMS al número de teléfono especificado.
      *
-     * @param toPhoneNumber Número de teléfono del destinatario
-     * @param messageBody Contenido del mensaje a enviar
+     * @param toPhoneNumber Número de teléfono del destinatario.
+     * @param messageBody Contenido del mensaje a enviar.
      */
     public void sendSms(String toPhoneNumber, String messageBody) {
         try {
@@ -40,10 +49,10 @@ public class SmsNotificationService {
     }
 
     /**
-     * Envía un mensaje genérico para cualquier tipo de alerta.
+     * Envía una notificación de alerta genérica al número de teléfono especificado.
      *
-     * @param phoneNumber Número de teléfono del destinatario
-     * @param alertMessage Mensaje de alerta a enviar
+     * @param phoneNumber Número de teléfono del destinatario.
+     * @param alertMessage Mensaje de alerta a enviar.
      */
     public void sendAlertNotification(String phoneNumber, String alertMessage) {
         logger.info("Enviando notificación de alerta: {} a {}", alertMessage, phoneNumber);

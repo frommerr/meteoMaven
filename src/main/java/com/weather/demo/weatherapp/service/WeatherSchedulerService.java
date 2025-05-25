@@ -16,29 +16,64 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Servicio programado encargado de consultar periódicamente la API de clima,
+ * detectar condiciones meteorológicas extremas y notificar a los usuarios registrados.
+ */
 @Service
 public class WeatherSchedulerService {
 
+    /**
+     * Logger para registrar información y errores durante la ejecución de tareas programadas.
+     */
     private static final Logger logger = LoggerFactory.getLogger(WeatherSchedulerService.class);
 
+    /**
+     * Cliente HTTP para realizar peticiones a la API de clima.
+     */
     @Autowired
     private RestTemplate restTemplate;
 
+    /**
+     * Servicio para el envío de notificaciones SMS.
+     */
     @Autowired
     private SmsNotificationService smsNotificationService;
 
+    /**
+     * Repositorio para acceder a los usuarios registrados.
+     */
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * URL de la API de clima local utilizada para obtener los datos meteorológicos.
+     */
     private static final String WEATHER_API_URL = "http://localhost:8080/api/v1/weather/jumilla";
 
+    /**
+     * Indica si se ha detectado una condición meteorológica extrema.
+     */
     private boolean extremeConditionDetected = false;
+
+    /**
+     * Mensaje asociado a la condición extrema detectada.
+     */
     private String extremeConditionMessage = "";
+
+    /**
+     * Marca de tiempo en la que se detectó la condición extrema.
+     */
     private LocalDateTime extremeConditionTimestamp;
 
-    // Pool de hilos para enviar mensajes en paralelo
+    /**
+     * Pool de hilos para enviar notificaciones en paralelo.
+     */
     private final ExecutorService notificationExecutor = Executors.newFixedThreadPool(10); // Puedes ajustar el tamaño según tus recursos
 
+    /**
+     * Tarea programada que consulta la API de clima cada 10 minutos y verifica condiciones extremas.
+     */
     @Scheduled(fixedRate = 600000)
     public void fetchWeatherData() {
         try {
@@ -55,9 +90,9 @@ public class WeatherSchedulerService {
         }
     }
 
-    // cron de 6 horas: cron = "0 0 */6 * * *"
-    // cron de 1 minuto: cron = "0 * * * * *"
-
+    /**
+     * Tarea programada que envía notificaciones de condiciones extremas cada 6 horas si se detectaron.
+     */
     @Scheduled(cron = "0 0 2/6 * * *")
     public void sendExtremeWeatherNotifications() {
         if (extremeConditionDetected) {
@@ -73,6 +108,11 @@ public class WeatherSchedulerService {
         }
     }
 
+    /**
+     * Verifica si los datos meteorológicos contienen condiciones extremas y las registra si es necesario.
+     *
+     * @param weatherData Mapa con los datos meteorológicos actuales.
+     */
     private void checkAndSetExtremeConditions(Map<String, Object> weatherData) {
         try {
             logger.info("Verificando condiciones extremas: {}", weatherData);
@@ -83,6 +123,11 @@ public class WeatherSchedulerService {
         }
     }
 
+    /**
+     * Detecta temperaturas extremas en los datos meteorológicos.
+     *
+     * @param weatherData Mapa con los datos meteorológicos actuales.
+     */
     private void detectExtremeTemperature(Map<String, Object> weatherData) {
         try {
             String temperatureStr = (String) weatherData.get("temperature");
@@ -100,6 +145,11 @@ public class WeatherSchedulerService {
         }
     }
 
+    /**
+     * Detecta vientos extremos en los datos meteorológicos.
+     *
+     * @param weatherData Mapa con los datos meteorológicos actuales.
+     */
     private void detectExtremeWind(Map<String, Object> weatherData) {
         try {
             String windSpeedStr = (String) weatherData.get("windSpeed");
@@ -114,15 +164,22 @@ public class WeatherSchedulerService {
         }
     }
 
-
-
+    /**
+     * Registra una condición extrema detectada.
+     *
+     * @param message Mensaje descriptivo de la condición extrema.
+     */
     private void setExtremeCondition(String message) {
         extremeConditionDetected = true;
         extremeConditionMessage = message;
         extremeConditionTimestamp = LocalDateTime.now();
     }
 
-    // MODIFICADO: Ahora usa hilos para enviar notificaciones en paralelo
+    /**
+     * Envía notificaciones SMS a todos los usuarios registrados usando hilos en paralelo.
+     *
+     * @param message Mensaje a enviar a los usuarios.
+     */
     private void sendNotifications(String message) {
         List<User> users = userRepository.findAll();
 

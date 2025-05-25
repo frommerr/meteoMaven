@@ -10,14 +10,30 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+/**
+ * Servicio encargado de procesar y almacenar registros meteorológicos en la base de datos.
+ * Recibe datos en formato de mapa, los transforma en entidades {@link WeatherRecord} y los persiste.
+ */
 @Service
 public class WeatherRecordService {
 
+    /**
+     * Logger para registrar información y errores durante el procesamiento y almacenamiento de datos meteorológicos.
+     */
     private static final Logger logger = LoggerFactory.getLogger(WeatherRecordService.class);
 
+    /**
+     * Repositorio para acceder y almacenar entidades {@link WeatherRecord}.
+     */
     @Autowired
     private WeatherRecordRepository repository;
 
+    /**
+     * Procesa y guarda los datos meteorológicos recibidos en la base de datos.
+     *
+     * @param weatherData Mapa con los datos meteorológicos obtenidos de la API externa.
+     * @return El registro meteorológico guardado en la base de datos.
+     */
     public WeatherRecord saveWeatherData(Map<String, Object> weatherData) {
         logger.info("Guardando datos del clima: {}", weatherData);
 
@@ -74,6 +90,13 @@ public class WeatherRecordService {
         }
     }
 
+    /**
+     * Convierte un valor a Double, usando un valor predeterminado si la conversión falla.
+     *
+     * @param value Valor a convertir.
+     * @param defaultValue Valor predeterminado en caso de error.
+     * @return Valor convertido a Double o el valor predeterminado.
+     */
     private Double parseDouble(Object value, Double defaultValue) {
         try {
             return value != null ? Double.valueOf(value.toString()) : defaultValue;
@@ -83,6 +106,13 @@ public class WeatherRecordService {
         }
     }
 
+    /**
+     * Convierte un valor a Integer, usando un valor predeterminado si la conversión falla.
+     *
+     * @param value Valor a convertir.
+     * @param defaultValue Valor predeterminado en caso de error.
+     * @return Valor convertido a Integer o el valor predeterminado.
+     */
     private Integer parseInteger(Object value, Integer defaultValue) {
         try {
             return value != null ? Integer.valueOf(value.toString()) : defaultValue;
