@@ -79,7 +79,7 @@ public class WeatherRecordService {
                 logger.warn("No se encontró la clave 'rain' en los datos del clima.");
             }
 
-            record.setConsultTimestamp(LocalDateTime.now());
+            record.setConsultTimestamp(LocalDateTime.now().plusHours(2));
 
             WeatherRecord savedRecord = repository.save(record);
             logger.info("Registro guardado exitosamente: {}", savedRecord);
